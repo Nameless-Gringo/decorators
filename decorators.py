@@ -9,3 +9,12 @@ def access_control(func):
         else:
             print(UNKNOWN_COMMAND)
     return wrapper
+
+
+def write_to_file(func):
+    def wrapper(*args, **kwargs):
+        result = func(*args, **kwargs)
+        with open('games_result', 'a') as g:
+            g.write(result)
+        return result
+    return wrapper

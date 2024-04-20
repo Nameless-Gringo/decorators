@@ -1,7 +1,7 @@
 from datetime import datetime as dt
 from random import randint
 
-from access_control import access_control
+from decorators import access_control, write_to_file
 from constants import ADMIN_USERNAME, UNKNOWN_COMMAND
 
 start_time = dt.now()
@@ -24,7 +24,7 @@ def check_number(username: str, guess: int, number: int) -> bool:
         print(f'Отличная интуиция, {username}! Вы угадали число :)')
         # ...возвращаем True
         return True
-    
+
     if guess < number:
         print('Ваше число меньше того, что загадано.')
     else:
@@ -32,7 +32,8 @@ def check_number(username: str, guess: int, number: int) -> bool:
     return False
 
 
-def game(username: str, total_games: int) -> None:
+@write_to_file
+def game(username: str, total_games: int):
     # Получаем случайное число в диапазоне от 1 до 100.
     number = randint(1, 100)
     print(
@@ -40,7 +41,7 @@ def game(username: str, total_games: int) -> None:
         'Для выхода из текущей игры введите команду "stop"'
     )
     while True:
-        # Получаем пользовательский ввод, 
+        # Получаем пользовательский ввод,
         # отрезаем лишние пробелы и переводим в нижний регистр.
         user_input = input('Введите число или команду: ').strip().lower()
 
@@ -48,18 +49,19 @@ def game(username: str, total_games: int) -> None:
             case 'stop':
                 break
             case 'stat':
-                get_statistics(total_games, username=username) 
+                get_statistics(total_games, username=username)
             case 'answer':
                 get_right_answer(number, username=username)
             case _:
                 try:
-                    guess = int(user_input)                
+                    guess = int(user_input)
                 except ValueError:
                     print(UNKNOWN_COMMAND)
                     continue
 
                 if check_number(username, guess, number):
-                    break          
+                    break
+    return f'Загаданное число: {number}!'
 
 
 def get_username() -> str:
@@ -81,7 +83,7 @@ def guess_number() -> None:
     while True:
         total_games += 1
         game(username, total_games)
-        play_again = input(f'\nХотите сыграть ещё? (yes/no) ')
+        play_again = input('\nХотите сыграть ещё? (yes/no) ')
         if play_again.strip().lower() not in ('y', 'yes'):
             break
 
